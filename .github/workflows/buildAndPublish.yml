@@ -24,6 +24,7 @@ jobs:
         with:
           repository: buenosdiasn/PTL-fe
           fetch-depth: 1
+          token: ${{ secrets.PAT_FOR_PRIVATE_REPO }}
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,7 +35,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.PAT_FOR_GHCR }} # Use PAT for GHCR access
           
       - name: Extract metadata
         id: meta
