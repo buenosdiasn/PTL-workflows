@@ -54,8 +54,6 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/ptl-frontend
           tags: |
             type=ref,event=branch,suffix=-{{date 'YYYYMMDD'}}-{{sha}}
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
             type=raw,value=${{ steps.env.outputs.environment }}-latest
 
       - name: Build and push Docker image
