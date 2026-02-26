@@ -39,10 +39,9 @@ jobs:
           else
             echo "environment=dev" >> $GITHUB_OUTPUT
           fi
-          echo ${{ github.event_name }}
 
       - name: Log in to GitHub Container Registry
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call'
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
