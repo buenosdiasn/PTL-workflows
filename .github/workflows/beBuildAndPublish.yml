@@ -29,23 +29,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          repository: buenosdiasn/PTL-be
+          repository: ${{ vars.BE_CODE_REPO }}
           fetch-depth: 1
           token: ${{ secrets.GHA_PAT }}
           ref: ${{ github.event.inputs.branch || github.ref_name }}
-
-      - name: Check if secret is present
-        if: always()
-        env:
-          TOKEN: ${{ secrets.GHA_PAT }}
-        run: |
-          # Use standard bash parameter expansion to check length
-          if [ -z "$TOKEN" ]; then
-            echo "ERROR: The secret GHA_PAT is EMPTY or not set."
-            exit 1
-          else
-            echo "Secret found. Length is ${#TOKEN}."
-          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
