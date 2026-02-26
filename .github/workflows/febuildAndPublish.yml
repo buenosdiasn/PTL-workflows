@@ -2,6 +2,7 @@ name: "Build And Publish Frontend to GHCR"
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 concurrency:
   group: Frontend

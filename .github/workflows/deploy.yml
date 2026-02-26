@@ -1,0 +1,16 @@
+name: Deploy
+
+on:
+  repository_dispatch:
+    types: [deploy_request]
+
+jobs:
+  deploy-frontend:
+    if: ${{ github.event.client_payload.app == 'frontend' }}
+    uses: ./.github/workflows/feBuildAndPublish.yml
+    secrets: inherit
+
+  deploy-backend:
+    if: ${{ github.event.client_payload.app == 'backend' }}
+    uses: ./.github/workflows/beBuildAndPublish.yml
+    secrets: inherit

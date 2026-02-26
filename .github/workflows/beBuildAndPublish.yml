@@ -2,17 +2,7 @@ name: "Build And Publish Backend to GHCR"
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to build (dev or main)"
-        required: true
-        default: "dev"
-        type: choice
-        options:
-          - dev
-          - main
-  push:
-    branches: ["main"]
+  workflow_call:
 
 concurrency:
   group: Backend
