@@ -1,0 +1,16 @@
+name: Deploy on External Trigger
+
+on:
+  repository_dispatch:
+    types: [deploy_request]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Code
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ vars.BE_CODE_REPO }}
+          ref: ${{ github.event.client_payload.branch }}
+          token: ${{ secrets.GH_PAT }}

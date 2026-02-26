@@ -33,7 +33,7 @@ jobs:
         with:
           repository: buenosdiasn/PTL-be
           fetch-depth: 1
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GH_PAT }}
           ref: ${{ github.event.inputs.branch || github.ref_name }}
 
       - name: Set up Docker Buildx
@@ -57,7 +57,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ secrets.PACTOR}}
-          password: ${{ secrets.PAT }}
+          password: ${{ secrets.REGISTRY_PAT }}
 
       - name: Extract metadata
         id: meta
@@ -82,18 +82,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Export digest
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
-
-      - name: Upload digest
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
-        with:
-          name: digests
-          path: /tmp/digests/*
-          retention-days: 1
