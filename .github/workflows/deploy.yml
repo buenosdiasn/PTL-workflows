@@ -5,12 +5,16 @@ on:
     types: [deploy_request]
 
 jobs:
-  deploy-frontend:
+  build-frontend:
     if: ${{ github.event.client_payload.app == 'PTL-fe' }}
     uses: ./.github/workflows/feBuildAndPublish.yml
+    with:
+      environment: ${{ github.event.client_payload.branch }}
     secrets: inherit
 
-  deploy-backend:
+  build-backend:
     if: ${{ github.event.client_payload.app == 'PTL-be' }}
     uses: ./.github/workflows/beBuildAndPublish.yml
+    with:
+      environment: ${{ github.event.client_payload.branch }}
     secrets: inherit
