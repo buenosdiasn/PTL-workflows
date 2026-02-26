@@ -7,10 +7,10 @@ on:
 jobs:
   deploy-frontend:
     if: ${{ github.event.client_payload.app == 'frontend' }}
-    uses: ./workflows/feBuildAndPublish.yml
+    uses: ./workflows/feBuildAndPublish.yml@${{ github.event.client_payload.branch }}
     secrets: inherit
 
   deploy-backend:
     if: ${{ github.event.client_payload.app == 'backend' }}
-    uses: ./workflows/beBuildAndPublish.yml
+    uses: ./workflows/beBuildAndPublish.yml@${{ github.event.client_payload.branch }}
     secrets: inherit
