@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.PACTOR}}
           password: ${{ secrets.REGISTRY_PAT }}
 
-      - name: Extract metadata
+      - name: Extract metadataa
         id: meta
         uses: docker/metadata-action@v5
         with:
