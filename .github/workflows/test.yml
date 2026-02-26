@@ -11,6 +11,6 @@ jobs:
       - name: Checkout Private Code
         uses: actions/checkout@v6
         with:
-          repository: ${{ vars.BE_CODE_REPO }}
+          repository: buenosdiasn/${{ github.event.client_payload.app }}
           ref: ${{ github.event.client_payload.branch }}
           token: ${{ secrets.GHA_PAT }}
