@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Private Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ vars.BE_CODE_REPO }}
           ref: ${{ github.event.client_payload.branch }}
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GHA_PAT }}

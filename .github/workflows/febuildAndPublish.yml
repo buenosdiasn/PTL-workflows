@@ -24,7 +24,7 @@ jobs:
         with:
           repository: buenosdiasn/PTL-fe
           fetch-depth: 1
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GHA_PAT }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
