@@ -34,7 +34,7 @@ jobs:
       - name: Determine environment
         id: env
         run: |
-          if [[ "${{ inputs.environment }}" == "refs/heads/main" ]]; then
+          if [[ "${{ inputs.environment }}" == "main" ]]; then
             echo "environment=prod" >> $GITHUB_OUTPUT
           else
             echo "environment=dev" >> $GITHUB_OUTPUT
