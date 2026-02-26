@@ -6,11 +6,11 @@ on:
 
 jobs:
   deploy-frontend:
-    if: ${{ github.event.client_payload.app == 'frontend' }}
+    if: ${{ github.event.client_payload.app == 'PTL-fe' }}
     uses: ./.github/workflows/feBuildAndPublish.yml
     secrets: inherit
 
   deploy-backend:
-    if: ${{ github.event.client_payload.app == 'backend' }}
+    if: ${{ github.event.client_payload.app == 'PTL-be' }}
     uses: ./.github/workflows/beBuildAndPublish.yml
     secrets: inherit
