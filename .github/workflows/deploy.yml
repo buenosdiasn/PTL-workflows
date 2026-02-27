@@ -1,4 +1,5 @@
 run-name: Deploy ${{github.event.client_payload.app }} from ${{ github.event.client_payload.branch }}
+name: Deploy
 
 on:
   repository_dispatch:
