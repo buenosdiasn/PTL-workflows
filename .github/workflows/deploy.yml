@@ -18,3 +18,53 @@ jobs:
     with:
       environment: ${{ github.event.client_payload.branch }}
     secrets: inherit
+
+  deploy:
+    needs: [build-frontend, build-backend]
+    if: |
+      always() &&
+      (needs.build-frontend.result == 'success' || needs.build-backend.result == 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Code
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ secrets.INRFA_CODE_REPO }}
+          ref: main
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Copy Files to Server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "."
+          target: "/opt/my-project"
+          exclude: ".git,.github"
+
+      - name: Deploy Stack
+        uses: appleboy/ssh-action@v1.2.5
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DB_HOST,DB_USER,DB_PASS
+          script: |
+            cd /opt/my-project
+            # Create .env file using the passed environment variables
+            # This is safer than injecting secrets directly into the script string
+            cat <<EOF > .env
+            DB_HOST=$DB_HOST
+            DB_USER=$DB_USER
+            DB_PASS=$DB_PASS
+            EOF
+
+            chmod 600 .env
+            docker compose pull
+            docker compose up -d
+            docker image prune -f
