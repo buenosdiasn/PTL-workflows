@@ -57,8 +57,6 @@ jobs:
           envs: DB_HOST,DB_USER,DB_PASS
           script: |
             cd /opt/my-project
-            # Create .env file using the passed environment variables
-            # This is safer than injecting secrets directly into the script string
             cat <<EOF > .env
             DB_HOST=$DB_HOST
             DB_USER=$DB_USER
