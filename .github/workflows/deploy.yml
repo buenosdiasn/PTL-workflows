@@ -22,6 +22,7 @@ jobs:
 
   deploy:
     needs: [build-frontend, build-backend]
+    environment: ${{ github.event.client_payload.branch == 'main' && 'prod' || 'dev' }}
     if: |
       always() &&
       (needs.build-frontend.result == 'success' || needs.build-backend.result == 'success')
@@ -61,6 +62,28 @@ jobs:
             DB_HOST=$DB_HOST
             DB_USER=$DB_USER
             DB_PASS=$DB_PASS
+
+            EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+            EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+            EMAIL_USER=${{ secrets.EMAIL_USER }}
+            EMAIL_PASS=${{ secrets.EMAIL_PASS }}
+            RECEIVER_EMAIL=${{ secrets.RECEIVER_EMAIL }}
+            SALES_EMAIL_USER=${{ secrets.SALES_EMAIL_USER }}
+            SALES_EMAIL_PASS=${{ secrets.SALES_EMAIL_PASS }}
+
+            PAYU_MERCHANT_POS_ID=${{ secrets.PAYU_MERCHANT_POS_ID }}
+            PAYU_OAUTH_CLIENT_ID=${{ secrets.PAYU_OAUTH_CLIENT_ID }}
+            PAYU_SECOND_KEY_MD5=${{ secrets.PAYU_SECOND_KEY_MD5 }}
+            PAYU_OAUTH_CLIENT_SECRET=${{ secrets.PAYU_OAUTH_CLIENT_SECRET }}
+            PAYU_OAUTH_URL=${{ secrets.PAYU_OAUTH_URL }}
+            PAYU_ORDER_URL=${{ secrets.PAYU_ORDER_URL }}
+
+            GOOGLE_PLACE_ID=${{ secrets.GOOGLE_PLACE_ID }}
+            GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+
+            API_KEY=${{ secrets.API_KEY }}
+            HMAC_SECRET=${{ secrets.HMAC_SECRET }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
             EOF
 
             chmod 600 .env
