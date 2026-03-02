@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "."
-          target: "/opt/my-project"
+          target: "/opt/gha-deployment"
           exclude: ".git,.github"
 
       - name: Deploy Stack
@@ -57,7 +57,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: DB_HOST,DB_USER,DB_PASS
           script: |
-            cd /opt/my-project
+            cd /opt/gha-deployemnt
             cat <<EOF > .env
             DB_HOST=$DB_HOST
             DB_USER=$DB_USER
