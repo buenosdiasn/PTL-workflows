@@ -48,20 +48,28 @@ jobs:
       - name: Deploy Stack
         uses: appleboy/ssh-action@v1.2.5
         env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
+          DEPLOY_ENV: ${{ github.event.client_payload.branch == 'main' && 'prod' || 'dev' }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: DB_HOST,DB_USER,DB_PASS
+          envs: DEPLOY_ENV
           script: |
-            cd /opt/gha-deployemnt
+            cd /opt/gha-deployment
+
+            # Determine compose file
+            if [ "$DEPLOY_ENV" = "prod" ]; then
+              COMPOSE_FILE="prod.yml"
+            else
+              COMPOSE_FILE="dev.yml"
+            fi
+
+            echo "Deploying using $COMPOSE_FILE..."
+
             cat <<EOF > .env
-            DB_HOST=$DB_HOST
-            DB_USER=$DB_USER
-            DB_PASS=$DB_PASS
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASS=${{ secrets.DB_PASS }}
 
             EMAIL_HOST=${{ secrets.EMAIL_HOST }}
             EMAIL_PORT=${{ secrets.EMAIL_PORT }}
@@ -87,6 +95,7 @@ jobs:
             EOF
 
             chmod 600 .env
-            docker compose pull
-            docker compose up -d
+
+            docker compose -f $COMPOSE_FILE pull
+            docker compose -f $COMPOSE_FILE up -d
             docker image prune -f
