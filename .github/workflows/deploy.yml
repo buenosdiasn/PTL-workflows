@@ -43,6 +43,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "."
           target: "/opt/gha-deployment"
+          overwrite: true
 
       - name: Deploy Stack
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
