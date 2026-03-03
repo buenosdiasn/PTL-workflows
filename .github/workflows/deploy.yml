@@ -33,7 +33,7 @@ jobs:
         with:
           repository: ${{ secrets.INRFA_CODE_REPO }}
           ref: main
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GHA_TOKEN }}
 
       - name: Copy Files to Server
         uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345
