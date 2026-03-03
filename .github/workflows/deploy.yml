@@ -35,6 +35,9 @@ jobs:
           ref: main
           token: ${{ secrets.GHA_PAT }}
 
+      - name: Prepare directory structure
+        run: mv caddy/config caddy_config
+
       - name: Copy Files to Server
         uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345
         with:
