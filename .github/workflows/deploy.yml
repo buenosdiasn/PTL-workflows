@@ -71,6 +71,7 @@ jobs:
             DB_USER=${{ secrets.DB_USER }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DB_NAME=${{ secrets.DB_NAME }}
+
             DB_SIE_USER=${{ secrets.DB_SIE_USER }}
             DB_SIE_PASSWORD=${{ secrets.DB_SIE_PASSWORD }}
             DB_SIE_NAME=${{ secrets.DB_SIE_NAME }}
