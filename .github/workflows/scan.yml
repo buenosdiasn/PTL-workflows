@@ -1,0 +1,39 @@
+run-name:
+name: Scan Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: true
+        default: dev-latest
+        type: string
+      app:
+        required: true
+        default: ptl-frontend
+        type: string
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}:${{ inputs.tag}}
+          registry-username: ${{ secrets.PACTOR }}
+          registry-password: ${{ secrets.REGISTRY_PAT }}
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Scan SBOM
+        uses: anchore/scan-action@v7
+        with:
+          sbom: sbom.spdx.json
+          fail-build: true
+          severity-cutoff: high
