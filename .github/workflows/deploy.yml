@@ -42,6 +42,7 @@ jobs:
         uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345
         with:
           host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ".,!.git"
@@ -54,6 +55,7 @@ jobs:
           DEPLOY_ENV: ${{ github.event.client_payload.branch == 'main' && 'prod' || 'dev' }}
         with:
           host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: DEPLOY_ENV
