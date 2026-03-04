@@ -25,15 +25,23 @@ jobs:
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:
-          image: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}:${{ inputs.tag}}
+          image: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}:${{ inputs.tag }}
           registry-username: ${{ secrets.PACTOR }}
           registry-password: ${{ secrets.REGISTRY_PAT }}
           format: spdx-json
           output-file: sbom.spdx.json
 
       - name: Scan SBOM
+        id: scan
         uses: anchore/scan-action@v7
         with:
           sbom: sbom.spdx.json
           fail-build: true
           severity-cutoff: high
+          output-format: sarif
+
+      - name: Upload SARIF to GitHub Security (Code Scanning)
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
