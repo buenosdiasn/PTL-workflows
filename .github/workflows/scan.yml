@@ -1,4 +1,4 @@
-run-name:
+run-name: Scanning ${{ inputs.app }}:${{ inputs.tag }}
 name: Scan Docker Image
 
 on:
