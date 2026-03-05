@@ -72,6 +72,7 @@ jobs:
             echo "Deploying using $COMPOSE_FILE..."
 
             cat <<EOF > .env
+            NOTIFY_BASE_URL=${{ secrets.NOTIFY_BASE_URL }}
             DB_HOST=${{ secrets.DB_HOST }}
             DB_USER=${{ secrets.DB_USER }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
