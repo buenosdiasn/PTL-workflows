@@ -45,7 +45,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ".,!.git"
+          source: ".,!.git,!scripts"
           target: "/opt/gha-deployment"
           overwrite: true
 
