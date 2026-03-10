@@ -1,28 +1,56 @@
-run-name: Deploy ${{github.event.client_payload.app }} from ${{ github.event.client_payload.branch }}
+run-name: Deploy ${{ github.event_name == 'workflow_dispatch' && inputs.app || github.event.client_payload.app }} from ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.event.client_payload.branch }}
+
 name: Deploy Apps
 
 on:
   repository_dispatch:
     types: [deploy_request]
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Application to deploy'
+        required: true
+        type: choice
+        options:
+          - PTL-fe
+          - PTL-be
+      branch:
+        description: 'Branch to build from'
+        required: true
+        default: 'main'
+        type: string
+      environment:
+        description: 'Target Environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+          - shared
+          - prod
 
 jobs:
   build-frontend:
-    if: ${{ github.event.client_payload.app == 'PTL-fe' }}
+    if: |
+      (github.event_name == 'workflow_dispatch' && inputs.app == 'PTL-fe') ||
+      (github.event_name == 'repository_dispatch' && github.event.client_payload.app == 'PTL-fe')
     uses: ./.github/workflows/feBuildAndPublish.yml
     with:
-      environment: ${{ github.event.client_payload.branch }}
+      environment: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.event.client_payload.branch }}
     secrets: inherit
 
   build-backend:
-    if: ${{ github.event.client_payload.app == 'PTL-be' }}
+    if: |
+      (github.event_name == 'workflow_dispatch' && inputs.app == 'PTL-be') ||
+      (github.event_name == 'repository_dispatch' && github.event.client_payload.app == 'PTL-be')
     uses: ./.github/workflows/beBuildAndPublish.yml
     with:
-      environment: ${{ github.event.client_payload.branch }}
+      environment: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.event.client_payload.branch }}
     secrets: inherit
 
   deploy:
     needs: [build-frontend, build-backend]
-    environment: ${{ github.event.client_payload.branch == 'main' && 'prod' || 'dev' }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.client_payload.branch == 'main' && 'prod' || 'dev') }}
     if: |
       always() &&
       (needs.build-frontend.result == 'success' || needs.build-backend.result == 'success')
@@ -52,7 +80,7 @@ jobs:
       - name: Deploy Stack
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
         env:
-          DEPLOY_ENV: ${{ github.event.client_payload.branch == 'main' && 'prod' || 'dev' }}
+          DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.client_payload.branch == 'main' && 'prod' || 'dev') }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           port: ${{ secrets.SSH_PORT }}
@@ -62,9 +90,10 @@ jobs:
           script: |
             cd /opt/gha-deployment
 
-            # Determine compose file
             if [ "$DEPLOY_ENV" = "prod" ]; then
               COMPOSE_FILE="prod.yml"
+            elif [ "$DEPLOY_ENV" = "uat" ]; then
+              COMPOSE_FILE="uat.yml"
             else
               COMPOSE_FILE="dev.yml"
             fi
@@ -110,5 +139,4 @@ jobs:
             docker compose -f $COMPOSE_FILE pull
             docker compose -f $COMPOSE_FILE up -d
             docker image prune -f
-            rm -rf .git .github
             # rm -rf .env
