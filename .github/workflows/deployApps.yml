@@ -26,7 +26,6 @@ on:
         options:
           - dev
           - uat
-          - shared
           - prod
 
 jobs:
