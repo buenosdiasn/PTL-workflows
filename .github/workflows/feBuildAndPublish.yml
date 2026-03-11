@@ -39,7 +39,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          repository: buenosdiasn/PTL-fe
+          repository: ${{ vars.FE_CODE_REPO }}
           fetch-depth: 1
           token: ${{ secrets.GHA_PAT }}
           ref: ${{ steps.env.outputs.branch }}
