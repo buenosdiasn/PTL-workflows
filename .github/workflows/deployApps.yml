@@ -33,15 +33,18 @@ jobs:
     if: |
       (github.event_name == 'workflow_dispatch' && inputs.app == 'PTL-fe') ||
       (github.event_name == 'repository_dispatch' && github.event.client_payload.app == 'PTL-fe')
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.client_payload.branch == 'main' && 'prod' || 'dev') }}
     uses: ./.github/workflows/feBuildAndPublish.yml
     with:
       environment: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.event.client_payload.branch }}
+      api_base_url: ${{ vars.NUXT_PUBLIC_API_BASE_URL }}
     secrets: inherit
 
   build-backend:
     if: |
       (github.event_name == 'workflow_dispatch' && inputs.app == 'PTL-be') ||
       (github.event_name == 'repository_dispatch' && github.event.client_payload.app == 'PTL-be')
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.client_payload.branch == 'main' && 'prod' || 'dev') }}
     uses: ./.github/workflows/beBuildAndPublish.yml
     with:
       environment: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.event.client_payload.branch }}

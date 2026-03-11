@@ -7,6 +7,9 @@ on:
       environment:
         type: string
         required: true
+      api_base_url:
+        type: string
+        required: true
 
 concurrency:
   group: Frontend
@@ -56,7 +59,7 @@ jobs:
           tags: |
             type=ref,event=branch,suffix=-{{date 'YYYYMMDD'}}-{{sha}}
             type=raw,value=${{ steps.env.outputs.environment }}-latest
-
+      
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v5
@@ -68,4 +71,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            NUXT_PUBLIC_API_BASE_URL=${{ vars.NUXT_PUBLIC_API_BASE_URL }}
+            NUXT_PUBLIC_API_BASE_URL=${{ inputs.api_base_url }}
