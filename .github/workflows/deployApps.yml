@@ -14,11 +14,6 @@ on:
         options:
           - PTL-fe
           - PTL-be
-      branch:
-        description: 'Branch to build from'
-        required: true
-        default: 'main'
-        type: string
       environment:
         description: 'Target Environment'
         required: true
@@ -44,7 +39,7 @@ jobs:
       (github.event_name == 'repository_dispatch' && github.event.client_payload.app == 'PTL-be')
     uses: ./.github/workflows/beBuildAndPublish.yml
     with:
-      environment: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.event.client_payload.branch }}
+      environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.client_payload.branch == 'main' && 'prod' || 'dev') }}
     secrets: inherit
 
   deploy:
