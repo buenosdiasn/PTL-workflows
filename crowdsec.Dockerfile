@@ -1,8 +1,12 @@
-FROM caddy:builder AS builder
+FROM caddy:2.11-builder AS builder
 
 RUN xcaddy build \
-    --with github.com/hslatman/caddy-crowdsec-bouncer
+    --with github.com/hslatman/caddy-crowdsec-bouncer/http \
+    --with github.com/hslatman/caddy-crowdsec-bouncer/appsec \
+    --with github.com/porech/caddy-maxmind-geolocation \
+    --with github.com/mholt/caddy-ratelimit \
+    --with github.com/greenpau/caddy-security \
 
-FROM caddy:latest
+FROM caddy:2.11
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
