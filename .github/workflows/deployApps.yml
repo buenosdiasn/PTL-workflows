@@ -126,6 +126,8 @@ jobs:
             API_KEY=${{ secrets.API_KEY }}
             HMAC_SECRET=${{ secrets.HMAC_SECRET }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
+
+            CROWDSEC_LAPI_KEY=${{ secrets.CROWDSEC_LAPI_KEY }}
             EOF
 
             chmod 600 .env
