@@ -4,7 +4,7 @@ name: Deploy Apps
 
 on:
   repository_dispatch:
-    types: [deploy_request]
+    types: [ deploy_request ]
   workflow_dispatch:
     inputs:
       app:
@@ -12,16 +12,16 @@ on:
         required: true
         type: choice
         options:
-          - PTL-fe
-          - PTL-be
+        - PTL-fe
+        - PTL-be
       environment:
         description: 'Target Environment'
         required: true
         type: choice
         options:
-          - dev
-          - uat
-          - prod
+        - dev
+        - uat
+        - prod
 
 jobs:
   build-frontend:
@@ -43,96 +43,96 @@ jobs:
     secrets: inherit
 
   deploy:
-    needs: [build-frontend, build-backend]
+    needs: [ build-frontend, build-backend ]
     environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.client_payload.branch == 'main' && 'prod' || 'dev') }}
     if: |
       always() &&
       (needs.build-frontend.result == 'success' || needs.build-backend.result == 'success')
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Private Code
-        uses: actions/checkout@v6
-        with:
-          repository: ${{ secrets.INRFA_CODE_REPO }}
-          ref: main
-          token: ${{ secrets.GHA_PAT }}
+    - name: Checkout Private Code
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ secrets.INRFA_CODE_REPO }}
+        ref: main
+        token: ${{ secrets.GHA_PAT }}
 
-      - name: Prepare directory structure
-        run: mv caddy/config caddy_config
+    - name: Prepare directory structure
+      run: mv caddy/config caddy_config
 
-      - name: Copy Files to Server
-        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ".,!.git,!scripts"
-          target: "/opt/gha-deployment"
-          overwrite: true
+    - name: Copy Files to Server
+      uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: ".,!.git,!scripts"
+        target: "/opt/gha-deployment"
+        overwrite: true
 
-      - name: Deploy Stack
-        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
-        env:
-          DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.client_payload.branch == 'main' && 'prod' || 'dev') }}
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: DEPLOY_ENV
-          script: |
-            cd /opt/gha-deployment
+    - name: Deploy Stack
+      uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
+      env:
+        DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.client_payload.branch == 'main' && 'prod' || 'dev') }}
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        envs: DEPLOY_ENV
+        script: |
+          cd /opt/gha-deployment
 
-            if [ "$DEPLOY_ENV" = "prod" ]; then
-              COMPOSE_FILE="prod.yml"
-            elif [ "$DEPLOY_ENV" = "uat" ]; then
-              COMPOSE_FILE="uat.yml"
-            else
-              COMPOSE_FILE="dev.yml"
-            fi
+          if [ "$DEPLOY_ENV" = "prod" ]; then
+            COMPOSE_FILE="prod.yml"
+          elif [ "$DEPLOY_ENV" = "uat" ]; then
+            COMPOSE_FILE="uat.yml"
+          else
+            COMPOSE_FILE="dev.yml"
+          fi
 
-            echo "Deploying using $COMPOSE_FILE..."
+          echo "Deploying using $COMPOSE_FILE..."
 
-            cat <<EOF > .env
-            NOTIFY_BASE_URL=${{ secrets.NOTIFY_BASE_URL }}
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_NAME=${{ secrets.DB_NAME }}
+          cat <<EOF > .env
+          NOTIFY_BASE_URL=${{ secrets.NOTIFY_BASE_URL }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_NAME=${{ secrets.DB_NAME }}
 
-            DB_SIE_USER=${{ secrets.DB_SIE_USER }}
-            DB_SIE_PASSWORD=${{ secrets.DB_SIE_PASSWORD }}
-            DB_SIE_NAME=${{ secrets.DB_SIE_NAME }}
+          DB_SIE_USER=${{ secrets.DB_SIE_USER }}
+          DB_SIE_PASSWORD=${{ secrets.DB_SIE_PASSWORD }}
+          DB_SIE_NAME=${{ secrets.DB_SIE_NAME }}
 
-            EMAIL_HOST=${{ secrets.EMAIL_HOST }}
-            EMAIL_PORT=${{ secrets.EMAIL_PORT }}
-            EMAIL_USER=${{ secrets.EMAIL_USER }}
-            EMAIL_PASS=${{ secrets.EMAIL_PASS }}
-            RECEIVER_EMAIL=${{ secrets.RECEIVER_EMAIL }}
-            SALES_EMAIL_USER=${{ secrets.SALES_EMAIL_USER }}
-            SALES_EMAIL_PASS=${{ secrets.SALES_EMAIL_PASS }}
+          EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+          EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+          EMAIL_USER=${{ secrets.EMAIL_USER }}
+          EMAIL_PASS=${{ secrets.EMAIL_PASS }}
+          RECEIVER_EMAIL=${{ secrets.RECEIVER_EMAIL }}
+          SALES_EMAIL_USER=${{ secrets.SALES_EMAIL_USER }}
+          SALES_EMAIL_PASS=${{ secrets.SALES_EMAIL_PASS }}
 
-            PAYU_MERCHANT_POS_ID=${{ secrets.PAYU_MERCHANT_POS_ID }}
-            PAYU_OAUTH_CLIENT_ID=${{ secrets.PAYU_OAUTH_CLIENT_ID }}
-            PAYU_SECOND_KEY_MD5=${{ secrets.PAYU_SECOND_KEY_MD5 }}
-            PAYU_OAUTH_CLIENT_SECRET=${{ secrets.PAYU_OAUTH_CLIENT_SECRET }}
-            PAYU_OAUTH_URL=${{ secrets.PAYU_OAUTH_URL }}
-            PAYU_ORDER_URL=${{ secrets.PAYU_ORDER_URL }}
+          PAYU_MERCHANT_POS_ID=${{ secrets.PAYU_MERCHANT_POS_ID }}
+          PAYU_OAUTH_CLIENT_ID=${{ secrets.PAYU_OAUTH_CLIENT_ID }}
+          PAYU_SECOND_KEY_MD5=${{ secrets.PAYU_SECOND_KEY_MD5 }}
+          PAYU_OAUTH_CLIENT_SECRET=${{ secrets.PAYU_OAUTH_CLIENT_SECRET }}
+          PAYU_OAUTH_URL=${{ secrets.PAYU_OAUTH_URL }}
+          PAYU_ORDER_URL=${{ secrets.PAYU_ORDER_URL }}
 
-            GOOGLE_PLACE_ID=${{ secrets.GOOGLE_PLACE_ID }}
-            GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_PLACE_ID=${{ secrets.GOOGLE_PLACE_ID }}
+          GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
 
-            API_KEY=${{ secrets.API_KEY }}
-            HMAC_SECRET=${{ secrets.HMAC_SECRET }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
+          API_KEY=${{ secrets.API_KEY }}
+          HMAC_SECRET=${{ secrets.HMAC_SECRET }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
 
-            CROWDSEC_LAPI_KEY=${{ secrets.CROWDSEC_LAPI_KEY }}
-            EOF
+          CROWDSEC_LAPI_KEY=${{ secrets.CROWDSEC_LAPI_KEY }}
+          EOF
 
-            chmod 600 .env
+          chmod 600 .env
 
-            docker compose -f $COMPOSE_FILE pull
-            docker compose -f $COMPOSE_FILE up -d
-            docker image prune -f
-            # rm -rf .env
+          docker compose -f $COMPOSE_FILE pull
+          docker compose -f $COMPOSE_FILE up -d
+          docker image prune -f
+          # rm -rf .env
