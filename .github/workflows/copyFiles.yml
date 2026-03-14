@@ -1,5 +1,4 @@
-name: Deploy Shared Resources
-
+name: Copy Infra Files to VPS
 on:
   workflow_dispatch:
 
