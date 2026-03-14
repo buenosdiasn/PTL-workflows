@@ -1,0 +1,30 @@
+name: Deploy Shared Resources
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Private Code
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ secrets.INRFA_CODE_REPO }}
+        ref: main
+        token: ${{ secrets.GHA_PAT }}
+
+    - name: Prepare directory structure
+      run: mv caddy/config caddy_config
+
+    - name: Copy Files to Server
+      uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: ".,!.git,!scripts"
+        target: "/opt/gha-deployment"
+        overwrite: true
