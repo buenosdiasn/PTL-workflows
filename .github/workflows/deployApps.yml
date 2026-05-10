@@ -122,6 +122,9 @@ jobs:
 
           GOOGLE_PLACE_ID=${{ secrets.GOOGLE_PLACE_ID }}
           GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+          
+          FRONTEND_BASE_URL=${{ secrets.FRONTEND_BASE_URL }}
+          VOUCHER_DB_NAME=${{ secrets.VOUCHER_DB_NAME }}
 
           API_KEY=${{ secrets.API_KEY }}
           HMAC_SECRET=${{ secrets.HMAC_SECRET }}
