@@ -105,6 +105,12 @@ jobs:
           DB_SIE_PASSWORD=${{ secrets.DB_SIE_PASSWORD }}
           DB_SIE_NAME=${{ secrets.DB_SIE_NAME }}
 
+          PAYU_MERCHANT_POS_ID_SIE=${{ secrets.PAYU_MERCHANT_POS_ID_SIE }}
+          PAYU_OAUTH_CLIENT_ID_SIE=${{ secrets.PAYU_OAUTH_CLIENT_ID_SIE }}
+          PAYU_SECOND_KEY_MD5_SIE=${{ secrets.PAYU_SECOND_KEY_MD5_SIE }}
+          PAYU_OAUTH_CLIENT_SECRET_SIE=${{ secrets.PAYU_OAUTH_CLIENT_SECRET_SIE }}
+
+          
           EMAIL_HOST=${{ secrets.EMAIL_HOST }}
           EMAIL_PORT=${{ secrets.EMAIL_PORT }}
           EMAIL_USER=${{ secrets.EMAIL_USER }}
