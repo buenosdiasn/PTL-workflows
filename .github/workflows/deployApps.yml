@@ -121,7 +121,6 @@ jobs:
           PAYU_ORDER_URL=${{ secrets.PAYU_ORDER_URL }}
 
           CITY=${{ secrets.CITY }}
-          API_PREFIX=${{secrets.API_PREFIX}}
           
           GOOGLE_PLACE_ID=${{ secrets.GOOGLE_PLACE_ID }}
           GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
